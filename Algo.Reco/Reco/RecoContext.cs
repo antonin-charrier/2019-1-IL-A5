@@ -42,8 +42,8 @@ namespace Algo
         public double SimilarityPearson( IEnumerable<(int x, int y)> values )
         {
             var val = values.ToList();
-            var sumX = 0;
-            var sumY = 0;
+            double sumX = 0;
+            double sumY = 0;
             foreach( var (x, y) in val )
             {
                 sumX += x;
@@ -53,19 +53,19 @@ namespace Algo
             var averageX = sumX / val.Count;
             var averageY = sumY / val.Count;
 
-            var dividend = 0;
+            double dividend = 0;
             foreach ( var (x, y) in val )
                 dividend += (x - averageX) * (y - averageY);
 
-            var divisorLeft = 0;
+            double divisorLeft = 0;
             foreach( var (x, y) in val )
-                divisorLeft += (x - averageX) * (x - averageX);
+                divisorLeft += ( x - averageX) * (x - averageX);
 
-            var divisorRight = 0;
+            double divisorRight = 0;
             foreach( var (x, y) in val )
                 divisorRight += (y - averageY) * (y - averageY);
 
-            var divisor = Math.Sqrt( divisorLeft ) * Math.Sqrt( divisorRight );
+            double divisor = Math.Sqrt( divisorLeft ) * Math.Sqrt( divisorRight );
 
             return dividend / divisor;
         }
