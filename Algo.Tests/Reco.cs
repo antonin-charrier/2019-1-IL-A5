@@ -139,12 +139,5 @@ namespace Algo.Tests
             Assert.That( _context.SimilarityPearson( _context.Users[3640], _context.Users[286] ), Is.EqualTo( 0.28064295060584 ).Within( 1e-15 ) );
             Assert.That( _context.SimilarityPearson( _context.Users[486], _context.Users[286] ), Is.EqualTo( -0.692820323027552 ).Within( 1e-15 ) );
         }
-
-        [Test]
-        public void t()
-        {
-            var distance = _context.DistanceBetween( _context.Users[0], _context.Users[1] );
-            var similarity = _context.SimilarityBetween( _context.Users[0], _context.Users[1] );
-        }
     }
 }
