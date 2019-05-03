@@ -41,33 +41,40 @@ namespace Algo
 
         public double SimilarityPearson( IEnumerable<(int x, int y)> values )
         {
-            var val = values.ToList();
+            int n = 0;
             double sumX = 0;
             double sumY = 0;
-            foreach( var (x, y) in val )
+            double numerator = 0;
+            double denominatorLeft = 0;
+            double denominatorRight = 0;
+            foreach( var (x, y) in values )
             {
+                n++;
                 sumX += x;
                 sumY += y;
+                numerator += x * y;
+                denominatorLeft += x * x;
+                denominatorRight += y * y;
             }
 
-            var averageX = sumX / val.Count;
-            var averageY = sumY / val.Count;
+            if( n == 0 ) return 0.0;
+            if (n == 1)
+            {
+                (int x, int y) single = values.Single();
+                double d = Math.Abs( single.x - single.y );
+                return 1 / (1 + d);
+            }
 
-            double dividend = 0;
-            foreach ( var (x, y) in val )
-                dividend += (x - averageX) * (y - averageY);
+            var averageX = sumX / n;
+            var averageY = sumY / n;
+            
+            numerator -= n * averageX * averageY;
+            denominatorLeft -= n * averageX * averageX;
+            denominatorRight -= n * averageY * averageY;
 
-            double divisorLeft = 0;
-            foreach( var (x, y) in val )
-                divisorLeft += ( x - averageX) * (x - averageX);
+            double denominator = Math.Sqrt( denominatorLeft ) * Math.Sqrt( denominatorRight );
 
-            double divisorRight = 0;
-            foreach( var (x, y) in val )
-                divisorRight += (y - averageY) * (y - averageY);
-
-            double divisor = Math.Sqrt( divisorLeft ) * Math.Sqrt( divisorRight );
-
-            return dividend / divisor;
+            return numerator / denominator;
         }
 
         public bool LoadFrom( string folder )
