@@ -29,16 +29,56 @@ namespace Algo
         public double DistanceBetween(User user1, User user2)
         {
             var ratings1 = user1.Ratings.Where( r1 => user2.Ratings.Any( r2 => r1.Key.MovieId.Equals( r2.Key.MovieId ) ) ).ToList();
-            if( ratings1.Count == 0 ) return double.NaN;
+            if( ratings1.Count == 0 ) return double.PositiveInfinity;
 
             var ratings2 = user2.Ratings.Where( r2 => ratings1.Any( r1 => r2.Key.MovieId.Equals( r1.Key.MovieId ) ) ).ToList();
             if( ratings1.Count != ratings2.Count ) throw new Exception();
 
-            double sum = 0;
-            for (var i = 0; i < ratings1.Count; i++)
-                sum += Math.Pow( ratings1[i].Value - ratings2[i].Value, 2 );
+            var sum = 0;
+            for( var i = 0; i < ratings1.Count; i++ )
+                sum += (ratings1[i].Value - ratings2[i].Value) ^ 2;
 
             return Math.Sqrt( sum );
+        }
+
+        public double SimilarityBetween( User user1, User user2 )
+        {
+            return 1.0 / (1.0 + DistanceBetween( user1, user2 ));
+        }
+
+        public double PearsonSimilarityBetween(User user1, User user2)
+        {
+            var ratings1 = user1.Ratings.Where( r1 => user2.Ratings.Any( r2 => r1.Key.MovieId.Equals( r2.Key.MovieId ) ) ).ToList();
+            if( ratings1.Count == 0 ) return double.PositiveInfinity;
+
+            var ratings2 = user2.Ratings.Where( r2 => ratings1.Any( r1 => r2.Key.MovieId.Equals( r1.Key.MovieId ) ) ).ToList();
+            if( ratings1.Count != ratings2.Count ) throw new Exception();
+
+            var sum1 = 0;
+            foreach (var rating in ratings1)
+                sum1 += rating.Value;
+            var mean1 = sum1 / ratings1.Count;
+
+            var sum2 = 0;
+            foreach( var rating in ratings2 )
+                sum2 += rating.Value;
+            var mean2 = sum2 / ratings2.Count;
+
+            var dividend = 0;
+            for( var i = 0; i < ratings1.Count; i++ )
+                dividend += (ratings1[i].Value - mean1) * (ratings2[i].Value - mean2);
+
+            var divisorLeft = 0;
+            for( var i = 0; i < ratings1.Count; i++ )
+                divisorLeft += (ratings1[i].Value - mean1) ^ 2;
+
+            var divisorRight = 0;
+            for( var i = 0; i < ratings2.Count; i++ )
+                divisorRight += (ratings2[i].Value - mean2) ^ 2;
+
+            var divisor = Math.Sqrt( divisorLeft ) * Math.Sqrt( divisorRight );
+
+            return dividend / divisor;
         }
     }
 }

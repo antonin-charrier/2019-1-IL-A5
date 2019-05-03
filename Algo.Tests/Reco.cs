@@ -133,6 +133,7 @@ namespace Algo.Tests
         public void t()
         {
             var distance = _context.DistanceBetween( _context.Users[0], _context.Users[1] );
+            var similarity = _context.SimilarityBetween( _context.Users[0], _context.Users[1] );
         }
     }
 }
