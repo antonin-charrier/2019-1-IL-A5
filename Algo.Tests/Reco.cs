@@ -128,5 +128,11 @@ namespace Algo.Tests
                 Assert.That( _context.Movies[i].MovieId, Is.EqualTo( i + 1 ) );
 
         }
+
+        [Test]
+        public void t()
+        {
+            var distance = _context.DistanceBetween( _context.Users[0], _context.Users[1] );
         }
     }
+}
