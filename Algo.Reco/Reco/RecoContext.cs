@@ -31,50 +31,52 @@ namespace Algo
 
         public double SimilarityPearson( User u1, User u2 )
         {
-            var ratings = new List<(int x, int y)>();
-            foreach( var movieR1 in u1.Ratings )
-                if( u2.Ratings.TryGetValue( movieR1.Key, out var r2 ) )
-                    ratings.Add( (movieR1.Value, r2) );
-
-            return SimilarityPearson(ratings);
+            var commonMovies = u1.Ratings.Keys.Intersect( u2.Ratings.Keys );
+            return SimilarityPearson( commonMovies.Select( m => (u1.Ratings[m], u2.Ratings[m]) ) );
         }
 
         public double SimilarityPearson( IEnumerable<(int x, int y)> values )
         {
-            int n = 0;
-            double sumX = 0;
-            double sumY = 0;
-            double numerator = 0;
-            double denominatorLeft = 0;
-            double denominatorRight = 0;
-            foreach( var (x, y) in values )
+            double sumX = 0.0;
+            double sumY = 0.0;
+            double sumXY = 0.0;
+            double sumX2 = 0.0;
+            double sumY2 = 0.0;
+            int N = 0;
+            foreach( var t in values )
             {
-                n++;
-                sumX += x;
-                sumY += y;
-                numerator += x * y;
-                denominatorLeft += x * x;
-                denominatorRight += y * y;
+                sumXY += t.x * t.y;
+                sumX += t.x;
+                sumY += t.y;
+                sumX2 += t.x * t.x;
+                sumY2 += t.y * t.y;
+                ++N;
             }
-
-            if( n == 0 ) return 0.0;
-            if (n == 1)
+            #region  Edge case....
+            if( N == 0 ) return 0.0;
+            if( N == 1 )
             {
-                (int x, int y) single = values.Single();
-                double d = Math.Abs( single.x - single.y );
+                var onlyOne = values.Single();
+                double d = Math.Abs( onlyOne.x - onlyOne.y );
                 return 1 / (1 + d);
             }
+            #endregion
 
-            var averageX = sumX / n;
-            var averageY = sumY / n;
-            
-            numerator -= n * averageX * averageY;
-            denominatorLeft -= n * averageX * averageX;
-            denominatorRight -= n * averageY * averageY;
+            double numerator = sumXY - (sumX * sumY / N);
 
-            double denominator = Math.Sqrt( denominatorLeft ) * Math.Sqrt( denominatorRight );
+            double denominatorX = sumX2 - (sumX * sumX / N);
+            double denominatorY = sumY2 - (sumY * sumY / N);
+            var result = numerator / Math.Sqrt( denominatorX * denominatorY );
 
-            return numerator / denominator;
+            #region Edge case
+            if( double.IsNaN( result ) )
+            {
+                double sumSquare = values.Select( v => v.x - v.y ).Select( v => v * v ).Sum();
+                result = 1.0 / (1 + Math.Sqrt( sumSquare ));
+            }
+            #endregion
+
+            return result;
         }
 
         public bool LoadFrom( string folder )
@@ -91,12 +93,9 @@ namespace Algo
             return true;
         }
 
-        public (IEnumerable<KeyValuePair<Movie, int>> UserRatings1, IEnumerable<KeyValuePair<Movie, int>> UserRatings2) GetRatings( User user1, User user2 )
+        public IEnumerable<(Movie movie, double percentage)> GetRecommandation( User u, int maxCount )
         {
-            var UserRatings1 = user1.Ratings.Where( r1 => user2.Ratings.Any( r2 => r1.Key.MovieId.Equals( r2.Key.MovieId ) ) );
-            var UserRatings2 = user2.Ratings.Where( r2 => UserRatings1.Any( r1 => r2.Key.MovieId.Equals( r1.Key.MovieId ) ) );
-
-            return (UserRatings1, UserRatings2);
+            throw new NotImplementedException();
         }
     }
 }
