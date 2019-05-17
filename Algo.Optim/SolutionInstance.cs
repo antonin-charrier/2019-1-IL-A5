@@ -11,35 +11,36 @@ namespace Algo.Optim
     {
         double _cost;
 
-        protected SolutionInstance( SolutionSpace space, IReadOnlyList<int> coordinates)
+        protected SolutionInstance( SolutionSpace space, IReadOnlyList<int> coords )
         {
             _cost = -1.0;
             Space = space;
-            Coordinates = coordinates;
-            Debug.Assert( CheckCoordinates() );
+            Coords = coords;
+            Debug.Assert( CheckCoords() );
         }
 
-        public bool CheckCoordinates()
+        public bool CheckCoords()
         {
-            if( Coordinates.Count == Space.Dimensions.Count )
+            if( Coords.Count == Space.Dimensions.Count )
             {
-                for( var i = 0; i < Coordinates.Count; i++ )
+                for( int i = 0; i < Coords.Count; i++ )
                 {
-                    if( Coordinates[i] < 0 || Coordinates[i] > Space.Dimensions[i] )
+                    if( Coords[i] < 0 || Coords[i] >= Space.Dimensions[i] )
                     {
                         return false;
                     }
                 }
                 return true;
             }
-            else return false;
+            return false;
         }
+
+        public IReadOnlyList<int> Coords { get; }
 
         public SolutionSpace Space { get; }
 
-        public IReadOnlyList<int> Coordinates { get; }
-
-        public double Cost {
+        public double Cost
+        {
             get
             {
                 if( _cost >= 0.0 ) return _cost;

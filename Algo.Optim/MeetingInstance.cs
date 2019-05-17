@@ -8,8 +8,10 @@ namespace Algo.Optim
 {
     public class MeetingInstance : SolutionInstance
     {
-        internal MeetingInstance( Meeting meeting, IReadOnlyList<int> coordinates )
-            : base( meeting, coordinates ) { }
+        internal MeetingInstance( Meeting m, IReadOnlyList<int> coords )
+            : base( m, coords )
+        {
+        }
 
         public new Meeting Space => (Meeting)base.Space;
 
@@ -17,6 +19,5 @@ namespace Algo.Optim
         {
             return 0.0;
         }
-
     }
 }

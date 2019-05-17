@@ -14,27 +14,29 @@ namespace Algo.Optim
         public List<SimpleFlight> ArrivalFlights { get; set; }
 
         public List<SimpleFlight> DepartureFlights { get; set; }
+
     }
 
     public class Meeting : SolutionSpace
     {
-        private readonly FlightDatabase _db;
+        readonly FlightDatabase _db;
 
         public Meeting( FlightDatabase db )
         {
             _db = db;
+
             Location = Airport.FindByCode( "LHR" );
             Guests = new List<Guest>()
             {
-                 new Guest() { Name = "Helmut", Location = Airport.FindByCode( "BER" ) },
-                 new Guest() { Name = "Bernard", Location = Airport.FindByCode( "CDG" ) },
-                 new Guest() { Name = "Marius", Location = Airport.FindByCode( "MRS" ) },
-                 new Guest() { Name = "Hubert", Location = Airport.FindByCode( "LYS" ) },
-                 new Guest() { Name = "Tom", Location = Airport.FindByCode( "MAN" ) },
-                 new Guest() { Name = "Maria", Location = Airport.FindByCode( "BIO" ) },
-                 new Guest() { Name = "Bob", Location = Airport.FindByCode( "JFK" ) },
-                 new Guest() { Name = "Ahmed", Location = Airport.FindByCode( "TUN" ) },
-                 new Guest() { Name = "Luigi", Location = Airport.FindByCode( "MXP" ) }
+                new Guest(){ Name="Helmut", Location= Airport.FindByCode("BER") },
+                new Guest(){ Name="Bernard", Location= Airport.FindByCode("CDG") },
+                new Guest(){ Name="Marius", Location= Airport.FindByCode("MRS") },
+                new Guest(){ Name="Hubert", Location= Airport.FindByCode("LYS") },
+                new Guest(){ Name="Tom", Location= Airport.FindByCode("MAN") },
+                new Guest(){ Name="Maria", Location= Airport.FindByCode("BIO") },
+                new Guest(){ Name="Bob", Location= Airport.FindByCode("JFK") },
+                new Guest(){ Name="Ahmed", Location= Airport.FindByCode("TUN") },
+                new Guest(){ Name="Luigi", Location= Airport.FindByCode("MXP") }
             };
             MaxArrivalTime = new DateTime( 2010, 7, 27, 17, 0, 0 );
             MinDepartureTime = new DateTime( 2010, 8, 3, 15, 0, 0 );
@@ -42,18 +44,19 @@ namespace Algo.Optim
             foreach( var g in Guests )
             {
                 var aFlights = _db.GetFlights( MaxArrivalTime.Date, g.Location, Location )
-                    .Concat( _db.GetFlights( MaxArrivalTime.Date.AddDays( -1 ), g.Location, Location ) )
-                    .Where( f => f.ArrivalTime < MaxArrivalTime && f.ArrivalTime > MaxArrivalTime.AddHours( -6 ) );
+                                .Concat( _db.GetFlights( MaxArrivalTime.Date.AddDays( -1 ), g.Location, Location ) )
+                                .Where( f => f.ArrivalTime < MaxArrivalTime
+                                             && f.ArrivalTime > MaxArrivalTime.AddHours( -6 ) );
                 g.ArrivalFlights = aFlights.ToList();
-
                 var dFlights = _db.GetFlights( MinDepartureTime.Date, Location, g.Location )
-                    .Concat( _db.GetFlights( MinDepartureTime.Date.AddDays( 1 ), Location, g.Location ) )
-                    .Where( f => f.DepartureTime > MinDepartureTime && f.DepartureTime < MinDepartureTime.AddHours( 6 ) );
+                                  .Concat( _db.GetFlights( MinDepartureTime.Date.AddDays( 1 ), Location, g.Location ) )
+                                  .Where( f => f.DepartureTime > MinDepartureTime
+                                               && f.DepartureTime < MinDepartureTime.AddHours( 6 ) );
                 g.DepartureFlights = dFlights.ToList();
             }
 
             var dimensions = new int[18];
-            for( var i = 0; i < 18; i++ )
+            for( int i = 0; i < 18; i++ )
             {
                 if( i < 9 )
                 {
@@ -61,7 +64,7 @@ namespace Algo.Optim
                 }
                 else
                 {
-                    dimensions[i] = Guests[i - 9].DepartureFlights.Count;
+                    dimensions[i] = Guests[i-9].DepartureFlights.Count;
                 }
             }
             Initialize( dimensions );
@@ -75,9 +78,10 @@ namespace Algo.Optim
 
         public DateTime MinDepartureTime { get; }
 
-        protected override SolutionInstance CreateInstance( IReadOnlyList<int> coordinates )
+        protected override SolutionInstance CreateInstance( IReadOnlyList<int> coords )
         {
-            return new MeetingInstance( this, coordinates );
+            return new MeetingInstance( this, coords );
         }
+
     }
 }

@@ -9,7 +9,7 @@ namespace Algo.Optim
     public abstract class SolutionSpace
     {
         readonly Random _random;
-        SolutionInstance _bestEver = null;
+        SolutionInstance _bestEver;
 
         protected SolutionSpace()
         {
@@ -21,45 +21,44 @@ namespace Algo.Optim
             _random = new Random( randomSeed );
         }
 
-        protected void Initialize( IReadOnlyList<int> dimensions )
+        protected void Initialize( IReadOnlyList<int> d )
         {
-            Dimensions = dimensions;
+            Dimensions = d;
         }
 
         public IReadOnlyList<int> Dimensions { get; private set; }
 
-        public double Cardinality => Dimensions.Aggregate( 1.0, ( acc, value ) => acc * value );
+        public double Cardinality => Dimensions.Aggregate( 1.0, ( acc, val ) => acc * val );
 
-        public SolutionInstance CreateRandomInstance() {
+        public SolutionInstance BestEver => _bestEver;
+
+        public SolutionInstance CreateRandomInstance()
+        {
             var r = new int[Dimensions.Count];
-
-            for( var i = 0; i < r.Length; i++ )
+            for( int i = 0; i < r.Length; ++i )
             {
                 r[i] = _random.Next( Dimensions[i] );
             }
-
             return DoCreateInstance( r );
         }
 
         public SolutionInstance ComputeBestRandom( int count )
         {
             SolutionInstance best = null;
-            while ( count-- > 0)
+            while( count-- > 0 )
             {
-                var r = CreateRandomInstance();
-                if( best == null || r.Cost < best.Cost ) best = r;
+                var rand = CreateRandomInstance();
+                if( best == null || rand.Cost < best.Cost ) best = rand;
             }
             return best;
         }
-
-        private SolutionInstance DoCreateInstance( IReadOnlyList<int> coordinates )
+        SolutionInstance DoCreateInstance( IReadOnlyList<int> coords )
         {
-            var s = CreateInstance( coordinates );
-            if( _bestEver == null || s.Cost < _bestEver.Cost ) _bestEver = s;
+            var s = CreateInstance( coords );
+            if( _bestEver == null || _bestEver.Cost > s.Cost ) _bestEver = s;
             return s;
         }
 
-
-        protected abstract SolutionInstance CreateInstance( IReadOnlyList<int> coordinates );
+        protected abstract SolutionInstance CreateInstance( IReadOnlyList<int> coords );
     }
 }

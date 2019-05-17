@@ -23,7 +23,6 @@ namespace Algo.Tests
         [Test]
         public void opening_database_from_ThirdParty_FlightData()
         {
-
             FlightDatabase db = new FlightDatabase( GetFlightDataPath() );
 
             {
@@ -77,11 +76,13 @@ namespace Algo.Tests
 
 
         [Test]
-        public void testing_cardinality()
+        public void testing_Cardinality()
         {
             FlightDatabase db = new FlightDatabase( GetFlightDataPath() );
             var m = new Meeting( db );
+
             Console.WriteLine( "Cardinality = " + m.Cardinality );
+
         }
     }
 }
