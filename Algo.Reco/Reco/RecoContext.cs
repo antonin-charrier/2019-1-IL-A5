@@ -95,7 +95,18 @@ namespace Algo
 
         public IEnumerable<(Movie movie, double percentage)> GetRecommandation( User u, int maxCount )
         {
-            throw new NotImplementedException();
+            var usersSimilarities = Users.Where( user => !user.UserID.Equals( u.UserID ) ).Select( user => (User: user, Similarity: SimilarityPearson( u, user )) );
+            var sampleUsers = usersSimilarities.Where( s => Math.Abs(s.Similarity ) > 0.9 );
+
+            var allRatings = sampleUsers.Select( s => s.User ).SelectMany( user => user.Ratings ).Where( r => !u.Ratings.Select( r2 => r2.Key.MovieId ).Contains( r.Key.MovieId ) );
+
+            var orderedMovies = new List<(Movie movie, double percentage)>();
+            foreach( var rating in allRatings )
+            {
+
+            }
+            
+            return orderedMovies.OrderByDescending( x => x.percentage ).Take(maxCount);
         }
     }
 }
